@@ -1,1 +1,3 @@
 tpcc-generator
+*.csv
+.vscode/
