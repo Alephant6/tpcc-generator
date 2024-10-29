@@ -250,7 +250,7 @@ TpccGenerator::generateDistricts() {
       d_next_o_id = 3001;
 
       // @formatter:off
-      d_csv << db_key << d_next_o_id << csv::endl;
+      d_csv << db_key << d_next_o_id << 0L << 0L << 0L << 0L << csv::endl;
       // @formatter:on
     }
   }
@@ -281,7 +281,7 @@ TpccGenerator::generateCustomerAndHistory() {
         c_balance = -1000;
 
         // @formatter:off
-        c_csv << db_key << c_balance << csv::endl;
+        c_csv << db_key << c_balance << 0L << 0L << 0L << 0L << csv::endl;
         // @formatter:on
       }
     }
@@ -305,7 +305,7 @@ TpccGenerator::generateItems() {
     i_price = makeNumber(100L, 10000L);
 
     // @formatter:off
-    i_csv << db_key << i_price << csv::endl;
+    i_csv << db_key << i_price << 0L << 0L << 0L << 0L << csv::endl;
     // @formatter:on
   }
 
@@ -333,7 +333,7 @@ TpccGenerator::generateStock() {
 
       // @formatter:off
       s_csv << db_key << s_quantity << s_order_cnt << s_ytd << s_remote_cnt
-            << csv::endl;
+            << 0L << csv::endl;
       // @formatter:on
     }
   }
@@ -389,7 +389,7 @@ TpccGenerator::generateOrdersAndOrderLines() {
               << o_carrier_id << csv::endl;
         // @formatter:on
         // @formatter:off
-        os_csv << os_db_key << 0L << csv::endl;
+        os_csv << os_db_key << 0L << 0L << 0L << 0L << 0L << csv::endl;
         // @formatter:on
 
         // Order line items
@@ -400,13 +400,13 @@ TpccGenerator::generateOrdersAndOrderLines() {
           if (o_id > 2100) {
             ol_amount = makeNumber(10L, 10000L);
             // @formatter:off
-            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d
+            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d << 0L << 0L
                    << csv::endl;
             // @formatter:on
           } else {
             ol_amount = 0L;
             // @formatter:off
-            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d
+            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d << 0L << 0L
                    << csv::endl;
             // @formatter:on
           }
@@ -415,7 +415,7 @@ TpccGenerator::generateOrdersAndOrderLines() {
         // Generate a new order entry for the order for the last 900 rows
         if (o_id > 2100) {
           EncodeNewOrderKey(&no_db_key, o_w_id, o_d_id, o_id);
-          no_csv << no_db_key << 0L << csv::endl;
+          no_csv << no_db_key << 0L << 0L << 0L << 0L << 0L << csv::endl;
         }
       }
     }
