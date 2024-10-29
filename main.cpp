@@ -70,7 +70,7 @@ main(int argc, char** argv) {
   generator.generateCustomerAndHistory();
   generator.generateItems();
   generator.generateStock();
-  //  generator.generateOrdersAndOrderLines();
+   generator.generateOrdersAndOrderLines();
   cout << endl << ".. data generation completed successfully :)" << endl;
 
   combineFiles(argv[2], "tpcc_table.csv");

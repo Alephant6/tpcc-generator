@@ -124,6 +124,78 @@ EncodeStockKey(int64_t *db_key, uint64_t w_id, uint64_t i_id) {
   key->stock.i_id = i_id;
 }
 
+void
+EncodeDistrictKey(int64_t *db_key, int64_t w_id, int64_t d_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->district.tabid = DISTRICT;
+  key->district.w_id = w_id;
+  key->district.d_id = d_id;
+}
+
+void
+EncodeCustomerKey(int64_t *db_key, int64_t w_id, int64_t d_id, int64_t c_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->customer.tabid = CUSTOMER;
+  key->customer.w_id = w_id;
+  key->customer.d_id = d_id;
+  key->customer.c_id = c_id;
+}
+
+void
+EncodeItemKey(int64_t *db_key, int64_t i_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->item.tabid = ITEM;
+  key->item.i_id = i_id;
+}
+
+void
+EncodeStockKey(int64_t *db_key, int64_t w_id, int64_t i_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->stock.tabid = STOCK;
+  key->stock.w_id = w_id;
+  key->stock.i_id = i_id;
+}
+
+void
+EncodeNewOrderKey(int64_t *db_key, int64_t w_id, int64_t d_id, int64_t o_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->neworder.tabid = NEWORDER;
+  key->neworder.w_id = w_id;
+  key->neworder.d_id = d_id;
+  key->neworder.o_id = o_id;
+}
+
+void
+EncodeOrderKey(int64_t *db_key, int64_t w_id, int64_t d_id, int64_t o_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->order.tabid = ORDER;
+  key->order.w_id = w_id;
+  key->order.d_id = d_id;
+  key->order.o_id = o_id;
+}
+
+void
+EncodeOrderLineKey(int64_t *db_key, int64_t w_id, int64_t d_id, int64_t o_id,
+                   int64_t ol_number) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->orderline.tabid = ORDERLINE;
+  key->orderline.w_id = w_id;
+  key->orderline.d_id = d_id;
+  key->orderline.o_id = o_id;
+  key->orderline.ol_number = ol_number;
+}
+
+void
+EncodeOrderStatusKey(int64_t *db_key, int64_t w_id, int64_t d_id, int64_t c_id,
+                     int64_t o_id) {
+  TPCCKey *key = (TPCCKey *)db_key;
+  key->orderstatus.tabid = ORDERSTATUS;
+  key->orderstatus.w_id = w_id;
+  key->orderstatus.d_id = d_id;
+  key->orderstatus.c_id = c_id;
+  key->orderstatus.o_id = o_id;
+}
+
 TpccGenerator::TpccGenerator(int64_t warehouse_count, const string &folder)
     : warehouse_count(warehouse_count), folder(folder), ranny(42) {}
 
@@ -175,7 +247,7 @@ TpccGenerator::generateDistricts() {
   for (d_w_id = 1; d_w_id <= warehouse_count; d_w_id++) {
     for (d_id = 1; d_id <= kDistrictsPerWarehouse; d_id++) {
       EncodeDistrictKey(&db_key, d_w_id, d_id);
-      d_next_o_id = 1;
+      d_next_o_id = 3001;
 
       // @formatter:off
       d_csv << db_key << d_next_o_id << csv::endl;
@@ -273,23 +345,27 @@ void
 TpccGenerator::generateOrdersAndOrderLines() {
   cout << "Generating orders .. " << flush;
 
+  int64_t o_db_key;
+  int64_t os_db_key;
+  int64_t ol_db_key;
+  int64_t no_db_key;
   int64_t o_id;
   int64_t o_c_id;
   int64_t o_d_id;
   int64_t o_w_id;
   int64_t o_carrier_id;
   int64_t o_ol_cnt;
-  array<char, 15> o_entry_d = {};  // XXX not sure if date is generate correctly
+  int64_t o_entry_d = 0;
   int64_t o_all_local = 1;
 
   int64_t ol_number;
   int64_t ol_i_id;
-  int64_t ol_quantity;
-  float ol_amount;
+  int64_t ol_amount;
   array<char, 24> ol_dist_info = {};
   string kNull = "null";
 
   csv::CsvWriter o_csv(folder + "/order.csv");
+  csv::CsvWriter os_csv(folder + "/order_status.csv");
   csv::CsvWriter ol_csv(folder + "/order_line.csv");
   csv::CsvWriter no_csv(folder + "/new_order.csv");
 
@@ -301,43 +377,45 @@ TpccGenerator::generateOrdersAndOrderLines() {
           makePermutation(1, kCustomerPerDistrict + 1);
 
       for (o_id = 1; o_id <= OrdersPerDistrict; o_id++) {
+        EncodeOrderKey(&o_db_key, o_w_id, o_d_id, o_id);
         o_c_id = customer_id_permutation[o_id - 1];
+        EncodeOrderStatusKey(&os_db_key, o_w_id, o_d_id, o_c_id, o_id);
         o_carrier_id = makeNumber(1L, 10L);
         o_ol_cnt = makeNumber(5L, 15L);
-        makeNow(o_entry_d.data());
+        o_entry_d++;
 
         // @formatter:off
-        o_csv << o_id << o_d_id << o_w_id << o_c_id << o_entry_d
-              << (o_id > 2100 ? kNull : to_string(o_carrier_id)) << o_ol_cnt
-              << o_all_local << csv::endl;
+        o_csv << o_db_key << o_c_id << o_entry_d << o_ol_cnt << o_all_local
+              << o_carrier_id << csv::endl;
+        // @formatter:on
+        // @formatter:off
+        os_csv << os_db_key << 0L << csv::endl;
         // @formatter:on
 
         // Order line items
         for (ol_number = 1; ol_number <= o_ol_cnt; ol_number++) {
+          EncodeOrderLineKey(&ol_db_key, o_w_id, o_d_id, o_id, ol_number);
           ol_i_id = makeNumber(1L, kItemCount);
-          ol_quantity = 5;
-          makeAlphaString(24, 24, ol_dist_info.data());
 
           if (o_id > 2100) {
-            ol_amount = (float)(makeNumber(10L, 10000L)) / 100.0f;
+            ol_amount = makeNumber(10L, 10000L);
             // @formatter:off
-            ol_csv << o_id << o_d_id << o_w_id << ol_number << ol_i_id << o_w_id
-                   << kNull << ol_quantity << csv::Precision(2) << ol_amount
-                   << ol_dist_info << csv::endl;
+            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d
+                   << csv::endl;
             // @formatter:on
           } else {
-            ol_amount = 0.0f;
+            ol_amount = 0L;
             // @formatter:off
-            ol_csv << o_id << o_d_id << o_w_id << ol_number << ol_i_id << o_w_id
-                   << o_entry_d.data() << ol_quantity << csv::Precision(2)
-                   << ol_amount << ol_dist_info << csv::endl;
+            ol_csv << ol_db_key << ol_amount << ol_i_id << o_entry_d
+                   << csv::endl;
             // @formatter:on
           }
         }
 
         // Generate a new order entry for the order for the last 900 rows
         if (o_id > 2100) {
-          no_csv << o_id << o_d_id << o_w_id << csv::endl;
+          EncodeNewOrderKey(&no_db_key, o_w_id, o_d_id, o_id);
+          no_csv << no_db_key << 0L << csv::endl;
         }
       }
     }
