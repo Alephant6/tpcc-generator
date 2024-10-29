@@ -54,14 +54,14 @@ union TPCCKey {
     uint64_t tabid : 4;
     uint64_t w_id : 14;
     uint64_t d_id : 4;
-    uint64_t o_id : 12;
+    uint64_t o_id : 24;
   } neworder, order;
 
   struct {
     uint64_t tabid : 4;
     uint64_t w_id : 14;
     uint64_t d_id : 4;
-    uint64_t o_id : 12;
+    uint64_t o_id : 24;
     uint64_t ol_number : 4;
   } orderline;
 
@@ -87,7 +87,7 @@ union TPCCKey {
     uint64_t w_id : 14;
     uint64_t d_id : 4;
     uint64_t c_id : 12;
-    uint64_t o_id : 12;
+    uint64_t o_id : 24;
   } orderstatus;
 };
 
