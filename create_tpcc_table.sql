@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS tpcc_table;
+
+CREATE TABLE tpcc_table (
+    db_key BIGINT PRIMARY KEY,
+    field0 INTEGER DEFAULT 0,
+    field1 INTEGER DEFAULT 0,
+    field2 INTEGER DEFAULT 0,
+    field3 INTEGER DEFAULT 0,
+    field4 INTEGER DEFAULT 0
+);
