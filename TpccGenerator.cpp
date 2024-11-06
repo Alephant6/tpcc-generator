@@ -28,66 +28,75 @@ union TPCCKey {
   uint64_t alt_db_key;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t payload : 60;
+    uint64_t payload : 59;
+    uint64_t tabid : 5;
   } tab;
 
   struct {
-    uint64_t tabid : 4;
+    uint64_t payload : 45;
     uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } warehouse;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
+    uint64_t payload : 41;
     uint64_t d_id : 4;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } district;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
-    uint64_t d_id : 4;
+    uint64_t payload : 29;
     uint64_t c_id : 12;
+    uint64_t d_id : 4;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } customer;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
-    uint64_t d_id : 4;
+    uint64_t payload : 17;
     uint64_t o_id : 24;
+    uint64_t d_id : 4;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } neworder, order;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
-    uint64_t d_id : 4;
-    uint64_t o_id : 24;
+    uint64_t payload: 13;
     uint64_t ol_number : 4;
+    uint64_t o_id : 24;
+    uint64_t d_id : 4;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } orderline;
 
   struct {
-    uint64_t tabid : 4;
+     uint64_t payload : 42;
     uint64_t i_id : 17;
+    uint64_t tabid : 5;
   } item;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
+    uint64_t payload: 28;
     uint64_t i_id : 17;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } stock;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t client_id : 14;
+     uint64_t payload : 5;
     uint64_t h_id : 40;
+    uint64_t client_id : 14;
+    uint64_t tabid : 5;
   } history;
 
   struct {
-    uint64_t tabid : 4;
-    uint64_t w_id : 14;
-    uint64_t d_id : 4;
-    uint64_t c_id : 12;
+     uint64_t payload : 5;
     uint64_t o_id : 24;
+    uint64_t c_id : 12;
+    uint64_t d_id : 4;
+    uint64_t w_id : 14;
+    uint64_t tabid : 5;
   } orderstatus;
 };
 
@@ -250,7 +259,7 @@ TpccGenerator::generateDistricts() {
       d_next_o_id = 3001;
 
       // @formatter:off
-      d_csv << db_key <<  (int64_t)DISTRICT << csv::endl;
+      d_csv << db_key << (int64_t)DISTRICT << csv::endl;
       // @formatter:on
     }
   }
@@ -281,7 +290,7 @@ TpccGenerator::generateCustomerAndHistory() {
         c_balance = -1000;
 
         // @formatter:off
-        c_csv << db_key <<  (int64_t)CUSTOMER << csv::endl;
+        c_csv << db_key << (int64_t)CUSTOMER << csv::endl;
         // @formatter:on
       }
     }
@@ -305,7 +314,7 @@ TpccGenerator::generateItems() {
     i_price = makeNumber(100L, 10000L);
 
     // @formatter:off
-    i_csv << db_key << (int64_t) ITEM << csv::endl;
+    i_csv << db_key << (int64_t)ITEM << csv::endl;
     // @formatter:on
   }
 
@@ -332,7 +341,7 @@ TpccGenerator::generateStock() {
       s_quantity = makeNumber(10L, 100L);
 
       // @formatter:off
-      s_csv << db_key << (int64_t) STOCK << csv::endl;
+      s_csv << db_key << (int64_t)STOCK << csv::endl;
       // @formatter:on
     }
   }
@@ -384,7 +393,7 @@ TpccGenerator::generateOrdersAndOrderLines() {
         o_entry_d++;
 
         // @formatter:off
-        o_csv << o_db_key <<  (int64_t)ORDER << csv::endl;
+        o_csv << o_db_key << (int64_t)ORDER << csv::endl;
         // @formatter:on
         // @formatter:off
         os_csv << os_db_key << (int64_t)ORDERSTATUS << csv::endl;
@@ -398,14 +407,12 @@ TpccGenerator::generateOrdersAndOrderLines() {
           if (o_id > 2100) {
             ol_amount = makeNumber(10L, 10000L);
             // @formatter:off
-            ol_csv << ol_db_key << (int64_t) ORDERLINE
-                   << csv::endl;
+            ol_csv << ol_db_key << (int64_t)ORDERLINE << csv::endl;
             // @formatter:on
           } else {
             ol_amount = 0L;
             // @formatter:off
-            ol_csv << ol_db_key <<  (int64_t)ORDERLINE
-                   << csv::endl;
+            ol_csv << ol_db_key << (int64_t)ORDERLINE << csv::endl;
             // @formatter:on
           }
         }
@@ -413,7 +420,7 @@ TpccGenerator::generateOrdersAndOrderLines() {
         // Generate a new order entry for the order for the last 900 rows
         if (o_id > 2100) {
           EncodeNewOrderKey(&no_db_key, o_w_id, o_d_id, o_id);
-          no_csv << no_db_key << (int64_t) NEWORDER << csv::endl;
+          no_csv << no_db_key << (int64_t)NEWORDER << csv::endl;
         }
       }
     }
